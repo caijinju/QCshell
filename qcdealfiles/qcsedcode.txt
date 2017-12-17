@@ -1,0 +1,13 @@
+;---------------------------------------------------------------------------
+;		PowerOn
+;---------------------------------------------------------------------------
+L_PowerOn:
+				R_PowerOnIndex++,
+				R_PowerOnIndex<D_SUM_POWERON?L_PowerOn_Play,L_PowerOn_Init
+
+		L_PowerOn_Init:
+				R_PowerOnIndex=0,L_PowerOn_Play
+
+		L_PowerOn_Play:
+				X_PlayIndex=R_PowerOnIndex+D_OFFSET_POWERON,L_PlayList
+
