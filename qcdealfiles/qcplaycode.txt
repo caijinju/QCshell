@@ -9,7 +9,7 @@ L_PlayList:
 				stop, X_Col=0, L_PlayListData 
 
 L_PlayListData:
-				Table(Tab_PlayList,X_Col,X_Row,X_DataH,X_DataL), 
+				Table(Tab_VoiceList,X_Col,X_Row,X_DataH,X_DataL), 
 				X_DataH=D_PLAY_OVER?L_PlayOver, 
 				X_DataH=D_PLAY_DELAY?L_PlayDelay, 
 				playV(ch0, X_DataH:X_DataL), L_PlayListNext

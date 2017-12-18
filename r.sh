@@ -16,6 +16,12 @@
 #			   - 3. 修改 cat ，改为 printf ，并在最后添加'\r\n'
 #			   - 4. 修改 sed ，添加正则匹配，将行尾符替换为'\r'
 #			   - cat 的内容能够并不会改变，但经过sed后仍会变化，所以sed必须处理！
+#
+#               2017-12-18 版本 V1.02 -- 修改部分功能
+#			   - 1. 添加区块标签 [Symbol] [Table]，将原标签替换后只需操作剪切复制代码块。
+#			   - 2. 修复上一版本注释定义误删除内容。
+#			   - 3. 语音列表改为 Tab_VoiceList，此修改是为了根据需要添加 Tab_MidiList；
+#				相应的，qcdealfiles/qcplaycode.txt 也需要修改表名。
 #########################################################################
 function initcode () {
 	sed -e "s/PowerOn/$1/g" -e "s/POWERON/$2/g" -e "s/$/\r/g" $3 >> $$.code
@@ -35,17 +41,17 @@ printf ";\t\t变 量 定 义\r\n" >> $$.reg
 printf ";---------------------------------------------------------------------------\r\n" >> $$.reg
 
 printf ";---------------------------------------------------------------------------\r\n" >> $$.sum
-printf ";\t\t定 义\r\n" >> $$.sum
+printf ";\t\t数 量 定 义\r\n" >> $$.sum
 printf ";---------------------------------------------------------------------------\r\n" >> $$.sum
 
 printf ";---------------------------------------------------------------------------\r\n" >> $$.offset
-printf ";\t\t定 义\r\n" >> $$.offset
+printf ";\t\t位 置 定 义\r\n" >> $$.offset
 printf ";---------------------------------------------------------------------------\r\n" >> $$.offset
 
 printf ";---------------------------------------------------------------------------\r\n" >> $$.tab
-printf ";\t\t列 表\r\n" >> $$.tab
+printf ";\t\t语 音 列 表\r\n" >> $$.tab
 printf ";---------------------------------------------------------------------------\r\n" >> $$.tab
-printf "Tab_PlayList:\r\n" >> $$.tab
+printf "Tab_VoiceList:\r\n" >> $$.tab
 printf "{\r\n" >> $$.tab
 
 cat /dev/null > $$.code
@@ -63,6 +69,7 @@ do
 	case ${temp} in 
 		q|Q)
 			flag=0
+			echo -e "[Symbol]\r" >> 处理结果.txt
 			cat "${dealfiledir}/qcsysdef.txt" >> 处理结果.txt
 			cat "${dealfiledir}/qcsysreg.txt" >> 处理结果.txt
 			cat $$.reg >> 处理结果.txt
@@ -71,6 +78,7 @@ do
 			echo -e "\r" >> 处理结果.txt
 			cat $$.offset >> 处理结果.txt
 			echo -e "\r" >> 处理结果.txt
+			echo -e "[Table]\r" >> 处理结果.txt
 			cat $$.tab >> 处理结果.txt
 			echo -e "[0x3ff, 0x3ff]\r"  >> 处理结果.txt
 			echo -e "}\r"  >> 处理结果.txt
