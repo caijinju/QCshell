@@ -22,11 +22,11 @@
 #			   - 2. 修复上一版本注释定义误删除内容。
 #			   - 3. 语音列表改为 Tab_VoiceList，此修改是为了根据需要添加 Tab_MidiList；
 #				相应的，qcdealfiles/qcplaycode.txt 也需要修改表名。
-#########################################################################
-function initcode () {
-	sed -e "s/PowerOn/$1/g" -e "s/POWERON/$2/g" -e "s/$/\r/g" $3 >> $$.code
-}
-
+#
+#               2017-12-19 版本 V1.03 -- 修改部分功能
+#			   - 1. 创建文件夹“脚本处理结果”保留脚本处理文件。
+#			   - 2. 将删除的临时文件保留，并重新命名为 txt 文件。
+#			   - 3. 将生成的模版文件保存在“脚本处理结果”中，并重命名为 demo_code.txt
 #########################################################################
 
 binpath=$(which $0)
@@ -36,26 +36,48 @@ rstart=10
 str="PowerOn"
 strUpper=$(echo $str|tr '[a-z]' '[A-Z]')
 
-printf ";---------------------------------------------------------------------------\r\n" >> $$.reg
-printf ";\t\t变 量 定 义\r\n" >> $$.reg
-printf ";---------------------------------------------------------------------------\r\n" >> $$.reg
+dealresultdir="0_脚本处理结果/变量生成模板/"
+mkdir -p ${dealresultdir}
+filereg="${dealresultdir}reg.txt"
+filesum="${dealresultdir}sum.txt"
+fileoffset="${dealresultdir}offset.txt"
+filetab="${dealresultdir}table.txt"
+filecode="${dealresultdir}code.txt"
+fileresult="${dealresultdir}demo_code.txt"
 
-printf ";---------------------------------------------------------------------------\r\n" >> $$.sum
-printf ";\t\t数 量 定 义\r\n" >> $$.sum
-printf ";---------------------------------------------------------------------------\r\n" >> $$.sum
+#########################################################################
+function initcode () {
+	sed -e "s/PowerOn/$1/g" -e "s/POWERON/$2/g" -e "s/$/\r/g" $3 >> ${filecode}
+}
 
-printf ";---------------------------------------------------------------------------\r\n" >> $$.offset
-printf ";\t\t位 置 定 义\r\n" >> $$.offset
-printf ";---------------------------------------------------------------------------\r\n" >> $$.offset
+#########################################################################
+cat /dev/null > ${filereg}
+cat /dev/null > ${filesum}
+cat /dev/null > ${fileoffset}
+cat /dev/null > ${filetab}
+cat /dev/null > ${filecode}
+cat /dev/null > ${fileresult}
 
-printf ";---------------------------------------------------------------------------\r\n" >> $$.tab
-printf ";\t\t语 音 列 表\r\n" >> $$.tab
-printf ";---------------------------------------------------------------------------\r\n" >> $$.tab
-printf "Tab_VoiceList:\r\n" >> $$.tab
-printf "{\r\n" >> $$.tab
+printf ";---------------------------------------------------------------------------\r\n" >> ${filereg}
+printf ";\t\t变 量 定 义\r\n" >> ${filereg}
+printf ";---------------------------------------------------------------------------\r\n" >> ${filereg}
 
-cat /dev/null > $$.code
-cat /dev/null > 处理结果.txt
+printf ";---------------------------------------------------------------------------\r\n" >> ${filesum}
+printf ";\t\t数 量 定 义\r\n" >> ${filesum}
+printf ";---------------------------------------------------------------------------\r\n" >> ${filesum}
+
+printf ";---------------------------------------------------------------------------\r\n" >> ${fileoffset}
+printf ";\t\t位 置 定 义\r\n" >> ${fileoffset}
+printf ";---------------------------------------------------------------------------\r\n" >> ${fileoffset}
+
+printf ";---------------------------------------------------------------------------\r\n" >> ${filetab}
+printf ";\t\t语 音 列 表\r\n" >> ${filetab}
+printf ";---------------------------------------------------------------------------\r\n" >> ${filetab}
+printf "Tab_VoiceList:\r\n" >> ${filetab}
+printf "{\r\n" >> ${filetab}
+
+clear
+
 flag=1
 while ((flag))
 do
@@ -69,35 +91,37 @@ do
 	case ${temp} in 
 		q|Q)
 			flag=0
-			echo -e "[Symbol]\r" >> 处理结果.txt
-			cat "${dealfiledir}/qcsysdef.txt" >> 处理结果.txt
-			cat "${dealfiledir}/qcsysreg.txt" >> 处理结果.txt
-			cat $$.reg >> 处理结果.txt
-			echo -e "\r" >> 处理结果.txt
-			cat $$.sum >> 处理结果.txt
-			echo -e "\r" >> 处理结果.txt
-			cat $$.offset >> 处理结果.txt
-			echo -e "\r" >> 处理结果.txt
-			echo -e "[Table]\r" >> 处理结果.txt
-			cat $$.tab >> 处理结果.txt
-			echo -e "[0x3ff, 0x3ff]\r"  >> 处理结果.txt
-			echo -e "}\r"  >> 处理结果.txt
-			echo -e "\r" >> 处理结果.txt
-			cat $$.code >> 处理结果.txt
-			cat "${dealfiledir}/qcplaycode.txt" >> 处理结果.txt
-			rm $$.reg $$.sum $$.offset $$.code $$.tab
+			echo -e "[0x3ff, 0x3ff]\r"  >> ${filetab}
+			echo -e "}\r"  >> ${filetab}
+
+			echo -e "[Symbol]\r" >> ${fileresult}
+			cat "${dealfiledir}/qcsysdef.txt" >> ${fileresult}
+			cat "${dealfiledir}/qcsysreg.txt" >> ${fileresult}
+			cat ${filereg} >> ${fileresult}
+			echo -e "\r" >> ${fileresult}
+			cat ${filesum} >> ${fileresult}
+			echo -e "\r" >> ${fileresult}
+			cat ${fileoffset} >> ${fileresult}
+			echo -e "\r" >> ${fileresult}
+			echo -e "[Table]\r" >> ${fileresult}
+			cat ${filetab} >> ${fileresult}
+			echo -e "\r" >> ${fileresult}
+			cat ${filecode} >> ${fileresult}
+			cat "${dealfiledir}/qcplaycode.txt" >> ${fileresult}
+#			rm ${filereg} ${filesum} ${fileoffset} ${filecode} ${filetab}
+			clear
 			echo "退出！"
 			;;
 		*)
 			newstr="$(echo ${temp::1}|tr '[a-z]' '[A-Z]')${temp:1}"
 			newstrupper=$(echo $newstr|tr '[a-z]' '[A-Z]')
 
-			printf "; %s\r\n" ${newstr} >> $$.tab
-			printf "[0x3ff, 0x3ff],\r\n"  >> $$.tab
-			echo -e "R_${newstr}Index\t\t=\t\tR${rstart}\r" >> $$.reg
+			printf "; %s\r\n" ${newstr} >> ${filetab}
+			printf "[0x3ff, 0x3ff],\r\n"  >> ${filetab}
+			echo -e "R_${newstr}Index\t\t=\t\tR${rstart}\r" >> ${filereg}
 			((rstart++))
-			echo -e "D_SUM_${newstrupper}\t\t=\t\t0\r" >> $$.sum
-			echo -e "D_OFFSET_${newstrupper}\t\t=\t\t0\r" >> $$.offset
+			echo -e "D_SUM_${newstrupper}\t\t=\t\t0\r" >> ${filesum}
+			echo -e "D_OFFSET_${newstrupper}\t\t=\t\t0\r" >> ${fileoffset}
 			initcode ${newstr} ${newstrupper} "${dealfiledir}/qcsedcode.txt"
 			echo "处理完毕！"
 			;;

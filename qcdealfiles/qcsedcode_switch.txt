@@ -1,0 +1,42 @@
+;---------------------------------------------------------------------------
+;		PowerOn
+;---------------------------------------------------------------------------
+L_PowerOn:
+				R_PowerOnIndex++,
+				switch(R_PowerOnIndex)=[ X, L_PowerOn_1 , L_PowerOn_2 , L_PowerOn_3 , L_PowerOn_4 , L_PowerOn_5 , 
+											L_PowerOn_6 , L_PowerOn_7 , L_PowerOn_8 , L_PowerOn_9 , L_PowerOn_10,
+											L_PowerOn_11, L_PowerOn_12, L_PowerOn_13, L_PowerOn_14, L_PowerOn_15,
+				],
+				R_PowerOnIndex=1, L_PowerOn_1
+
+		L_PowerOn_1:
+				
+		L_PowerOn_2:
+						
+		L_PowerOn_3:
+						
+		L_PowerOn_4:
+						
+		L_PowerOn_5:
+						
+		L_PowerOn_6:
+						
+		L_PowerOn_7:
+						
+		L_PowerOn_8:
+						
+		L_PowerOn_9:
+						
+		L_PowerOn_10:
+						
+		L_PowerOn_11:
+						
+		L_PowerOn_12:
+						
+		L_PowerOn_13:
+						
+		L_PowerOn_14:
+						
+		L_PowerOn_15:
+						
+
